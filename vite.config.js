@@ -7,6 +7,5 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss()
-  ],
-  base: '/grocery-e-commerce-website/',
+  ]
 })

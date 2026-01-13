@@ -1,16 +1,19 @@
 import React from 'react';
 import { Outlet, useLocation } from 'react-router';
 import Navbar from '../navbar/Navbar';
+import Footer from '../Footer/Footer';
 
 const Root = () => {
 
-    const isSeller = useLocation().pathname.includes('/seller');
-
+    const hideFooter =
+        location.pathname === "/login" ||
+        location.pathname.startsWith("/seller");
     return (
         <div>
             <Navbar></Navbar>
-            <div className={`${isSeller ? '': 'px-6 md:px-16 lg:px-24 xl:px-36'}`}>
+            <div className={`${hideFooter ? '' : 'px-6 md:px-16 lg:px-24 xl:px-36'}`}>
                 <Outlet></Outlet>
+                {!hideFooter && <Footer></Footer>}
             </div>
         </div>
     );

@@ -42,12 +42,12 @@ const Navbar = () => {
 
                 {
                     !user ? (
-                        <button onClick={()=>{
+                        <NavLink to='/login' onClick={()=>{
                             setShowUserLogin(true);
                         }} className="cursor-pointer px-6 py-2 mt-2 bg-[var(--color-primary)] 
                         hover:bg-[var(--color-primary-dull)] transition text-white rounded-full text-sm">
                             Login
-                        </button>
+                        </NavLink>
                     ) : (
                         <div className='relative group'>
                             <img className='w-10' src={assets.profile_icon} alt="" />
