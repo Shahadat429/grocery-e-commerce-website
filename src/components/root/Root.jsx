@@ -1,13 +1,14 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Outlet, useLocation } from 'react-router';
 import Navbar from '../navbar/Navbar';
 import Footer from '../Footer/Footer';
+import { AuthContext } from '../../context/AuthContext';
+import Login from '../Login/Login';
 
 const Root = () => {
-
-    const hideFooter =
-        location.pathname === "/login" ||
-        location.pathname.startsWith("/seller");
+    const location = useLocation();
+    const hideFooter = location.pathname.startsWith("/seller");
+    const { showUserLogin } = useContext(AuthContext);
     return (
         <div>
             <Navbar></Navbar>
@@ -15,6 +16,7 @@ const Root = () => {
                 <Outlet></Outlet>
                 {!hideFooter && <Footer></Footer>}
             </div>
+            {showUserLogin ? <Login /> : null}
         </div>
     );
 };

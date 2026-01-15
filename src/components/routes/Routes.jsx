@@ -14,10 +14,6 @@ const Routes = createBrowserRouter([
         Component: Home
       },
       {
-        path: "/login",
-        Component: Login
-      },
-      {
         path: "/seller"
       }
     ]
