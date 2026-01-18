@@ -1,40 +1,113 @@
-import React, { useContext } from 'react';
-import { AuthContext } from '../../context/AuthContext';
+import { useContext, useState } from "react";
+import { AuthContext } from "../../context/AuthContext";
 
 const Login = () => {
+  const { setShowUserLogin, setUser } = useContext(AuthContext);
 
-    const { setShowUserLogin } = useContext(AuthContext);
+  const [mode, setMode] = useState("login");
 
-    return (
-        <div onClick={()=> setShowUserLogin(false)} className='fixed top-0 left-0 bottom-0 right-0 z-30 flex items-center justify-center text-sm text-gray-600 bg-black/50'>
-            <form onClick={(e)=>e.stopPropagation()} className="bg-white rounded-lg shadow-xl text-sm text-gray-500 border border-gray-200 p-8 
-            py-12 w-80 sm:w-[352px]">
-                <p className="text-2xl font-medium text-center">
-                    <span className="text-indigo-500">User</span> Login </p>
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
 
-                <div className="mt-4">
-                    <label className="block">Email</label>
-                    <input type="email" placeholder="type here" required
-                        className="border border-gray-200 rounded w-full p-2 mt-1 outline-indigo-500" />
-                </div>
+  const handleSubmit = (e) => {
+    e.preventDefault();
 
-                <div className="mt-4">
-                    <label className="block">Password</label>
-                    <input type="password" placeholder="type here" required
-                        className="border border-gray-200 rounded w-full p-2 mt-1 outline-indigo-500" />
-                </div>
+    setUser({
+      email: "formData@email",
+      name: "formData.name",
+      
+    })
 
-                <p className="mt-4">
-                    Create an account?
-                    <a href="#" className="text-indigo-500">Click here</a>
-                </p>
+    setShowUserLogin(false);
 
-                <button type="submit" className="bg-indigo-500 hover:bg-indigo-600 transition-all text-white w-full py-2 rounded-md mt-4 cursor-pointer">
-                    Login
-                </button>
-            </form>
-        </div>
-    );
+};
+
+const handleChange = (e) => {
+  const { name, value } = e.target;
+  setFormData((prev) => ({ ...prev, [name]: value }));
+};
+
+return (
+  <div className="fixed inset-0 z-30 flex items-center justify-center">
+    {/* Overlay */}
+    <div
+      onClick={() => setShowUserLogin(false)}
+      className="absolute inset-0 bg-black/50" />
+
+    {/* Modal */}
+    <form
+      onSubmit={handleSubmit}
+      className="relative z-40 w-80 sm:w-[352px] bg-white rounded-xl border border-gray-200 px-8 py-10 text-center">
+      <h1 className="text-[var(--color-primary)] text-3xl font-medium">
+        User <span className="text-gray-600">{mode === "login" ? "Login" : "Sign up"}</span>
+      </h1>
+
+      <p className="text-gray-400 text-sm mt-2">
+        Please {mode === "login" ? "sign in" : "create an account"} to continue
+      </p>
+
+      {/* Name (Signup only) */}
+      {mode === "register" && (
+        <input
+          type="text"
+          name="name"
+          placeholder="Name"
+          value={formData.name}
+          onChange={handleChange}
+          required
+          className="mt-6 w-full border border-gray-300 px-4 py-2 
+            outline-[var(--color-primary)]"/>
+      )}
+
+      <input
+        type="email"
+        name="email"
+        placeholder="Email"
+        value={formData.email}
+        onChange={handleChange}
+        required
+        className="mt-4 w-full border border-gray-300 px-4 py-2 
+          outline-[var(--color-primary)]"/>
+
+      <input
+        type="password"
+        name="password"
+        placeholder="Password"
+        value={formData.password}
+        onChange={handleChange}
+        required
+        className="mt-4 w-full border border-gray-300 px-4 py-2 
+          outline-[var(--color-primary)]"/>
+
+      {mode === "login" && (
+        <p className="text-right text-sm text-[var(--color-primary)] mt-3 cursor-pointer">
+          Forgot password?
+        </p>
+      )}
+
+      <button
+        type="submit"
+        className="mt-5 w-full bg-[var(--color-primary)] hover:bg-[var(--color-primary-dull)] transition 
+          text-white py-2 rounded-full">
+        {mode === "login" ? "Login" : "Sign up"}
+      </button>
+
+      <p
+        onClick={() =>
+          setMode((prev) => (prev === "login" ? "register" : "login"))
+        }
+        className="mt-4 text-sm text-gray-400 cursor-pointer">
+        {mode === "login"
+          ? "Don't have an account?"
+          : "Already have an account?"}
+        <span className="text-[var(--color-primary)] ml-1">Click here</span>
+      </p>
+    </form>
+  </div>
+);
 };
 
 export default Login;

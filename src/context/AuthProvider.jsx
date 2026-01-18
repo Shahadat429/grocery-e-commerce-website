@@ -14,6 +14,7 @@ const AuthProvider = ({ children }) => {
     const [showUserLogin, setShowUserLogin] = useState(false);
     const [products, setProducts] = useState([]);
     const [cartItems, setCartItems] = useState({});
+    const [searchQuery, setSearchQuery] = useState({});
 
     // Fetch products (dummy implementation)
     const fetchProducts = async () => {
@@ -75,6 +76,8 @@ const AuthProvider = ({ children }) => {
         addToCart,
         updateQuantity,
         removeFromCart,
+        searchQuery,
+        setSearchQuery,
     }
 
     return (
