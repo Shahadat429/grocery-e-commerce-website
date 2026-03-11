@@ -1,0 +1,114 @@
+import React, { useEffect, useState } from 'react';
+import { AuthContext } from './AuthContext';
+import { useNavigate } from 'react-router';
+import { dummyProducts } from '../assets/assets';
+import toast, { Toaster } from 'react-hot-toast';
+
+const AuthProvider = ({ children }) => {
+
+    const currency = '$';
+
+    // const navigate = useNavigate();
+    const [user, setUser] = useState(null);
+    const [isSeller, setIsSeller] = useState(false);
+    const [showUserLogin, setShowUserLogin] = useState(false);
+    const [products, setProducts] = useState([]);
+    const [cartItems, setCartItems] = useState({});
+    const [searchQuery, setSearchQuery] = useState({});
+
+    // Fetch products (dummy implementation)
+    const fetchProducts = async () => {
+        setProducts(dummyProducts);
+    }
+
+    //Add product to cart
+    const addToCart = (itemId) => {
+        let cartData = structuredClone(cartItems);
+
+        if(cartData[itemId]){
+            cartData[itemId] += 1;    
+        } else {
+            cartData[itemId] = 1;
+        }
+        
+        setCartItems(cartData);
+        toast.success("Product added to cart");
+        
+    }
+
+    //Update product quantity in cart
+    const updateQuantity = (itemId, quantity) => {
+         let cartData = structuredClone(cartItems);
+         cartData[itemId] = quantity;
+         setCartItems(cartData);
+         toast.success("Cart updated successfully");
+    }
+
+    //Remove product from cart
+    const removeFromCart = (itemId) => {
+        let cartData = structuredClone(cartItems);
+        if(cartData[itemId]){
+            cartData[itemId] -= 1;
+
+            if(cartData[itemId] === 0){
+                delete cartData[itemId];
+            }
+        }
+        toast.success("Product removed from cart");
+        setCartItems(cartData);
+    }
+
+    useEffect( () => {
+        fetchProducts();
+    }, [])
+
+    //get cart items count
+    const getCartCount = () => {
+        let totalCount = 0;
+        for(const items in cartItems){
+            totalCount += cartItems[items];
+        }
+        return totalCount;
+    }
+
+    //get cart total amount
+    const getCartAmount = () => {
+        let totalAmount = 0;
+        for(const items in cartItems){
+            let itemInfo = products.find((product) => product._id === items);
+            if(cartItems[items] > 0){
+                totalAmount += cartItems[items] * itemInfo.offerPrice;
+            }
+        }
+        return Math.floor(totalAmount * 100) / 100;
+    }
+
+    const userInfo = {
+        user,
+        setUser,
+        isSeller,
+        setIsSeller,
+        showUserLogin,
+        setShowUserLogin, 
+        products,
+        currency,
+        cartItems,
+        addToCart,
+        updateQuantity,
+        removeFromCart,
+        searchQuery,
+        setSearchQuery,
+        getCartCount,
+        getCartAmount,
+    }
+
+    return (
+        <div>
+            <AuthContext value={userInfo}>
+                {children}
+            </AuthContext>
+        </div>
+    );
+};
+
+export default AuthProvider;
