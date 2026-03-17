@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../context/AuthContext';
-import ProductCard from '../components/Product Card/ProductCard';
+import ProductCard from '../components/ProductCard/ProductCard';
 
 const AllProducts = () => {
 

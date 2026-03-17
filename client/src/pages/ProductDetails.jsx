@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { Link, useNavigate, useParams } from 'react-router';
 import { assets } from '../assets/assets';
-import ProductCard from '../components/Product Card/ProductCard';
+import ProductCard from '../components/ProductCard/ProductCard';
 
 const ProductDetails = () => {
 

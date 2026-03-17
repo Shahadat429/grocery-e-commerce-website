@@ -2,16 +2,16 @@ import React, { useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { useParams } from 'react-router';
 import { categories } from '../assets/assets';
-import ProductCard from '../components/Product Card/ProductCard';
+import ProductCard from '../components/ProductCard/ProductCard';
 
 const ProductCategories = () => {
 
     const { products } = useContext(AuthContext);
     const { category } = useParams();
 
-    const searchCategory = categories.find((item)=> item.path.toLowerCase() === category);
+    const searchCategory = categories.find((item)=> item.path?.toLowerCase() === category?.toLowerCase());
 
-    const filterProducts = products.filter((product)=> product.category.toLowerCase() === category);
+    const filterProducts = products.filter((product)=> product.category?.toLowerCase() === category?.toLowerCase());
 
     return (
         <div className='mt-16'>

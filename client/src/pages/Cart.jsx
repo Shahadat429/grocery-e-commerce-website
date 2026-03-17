@@ -2,16 +2,17 @@ import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { assets, dummyAddress } from "../assets/assets";
 import { useNavigate } from "react-router";
+import toast from "react-hot-toast";
 
 const Cart = () => {
     // const [showAddress, setShowAddress] = useState(false) 
     const navigate = useNavigate();
 
-    const { products, currency, cartItems, removeFromCart, getCartCount, updateQuantity, getCartAmount } = useContext(AuthContext);
+    const { products, currency, cartItems, removeFromCart, getCartCount, updateQuantity, getCartAmount, axios, user, setCartItems } = useContext(AuthContext);
     const [cartArray, setCartArray] = useState([]);
-    const [addresses, setAddresses] = useState(dummyAddress);
+    const [addresses, setAddresses] = useState([]);
     const [showAddress, setShowAddress] = useState(false);
-    const [selectedAddress, setSelectedAddress] = useState(dummyAddress[0]);
+    const [selectedAddress, setSelectedAddress] = useState(null);
     const [paymentMethod, setPaymentMethod] = useState('COD');
 
     const getCart = () => {
@@ -24,8 +25,64 @@ const Cart = () => {
         setCartArray(tempArray);
     }
 
-    const placeOrder = async() => {
+    const getAddresses = async () => {
+        try {
+            const { data } = await axios.get('/api/address/get');
+            if (data.success) {
+                setAddresses(data.addresses);
+                if (data.addresses.length > 0) {
+                    setSelectedAddress(data.addresses[0]);
+                }
+            } else {
+                toast.error(data.message);
+            }
+        } catch (error) {
+            toast.error(error.message);
+        }
+    }
 
+    useEffect(() => {
+        if (user) {
+            getAddresses();
+        }
+    }, [user])
+
+    const placeOrder = async () => {
+        try {
+            if (!selectedAddress) {
+                return toast.error('Please add a delivery address to place the order.');
+            }
+
+            if (paymentMethod === 'COD') {
+                const { data } = await axios.post('/api/order/cod', {
+                    userId: user._id,
+                    items: cartArray.map((item) => ({ product: item._id, quantity: item.quantity })),
+                    address: selectedAddress._id,
+                })
+                if (data.success) {
+                    toast.success(data.message);
+                    setCartItems({});
+                    navigate('/my-orders');
+                } else {
+                    toast.error(data.message);
+                }
+            } else {
+                //place order with stripe
+                const { data } = await axios.post('/api/order/stripe', {
+                    userId: user._id,
+                    items: cartArray.map((item) => ({ product: item._id, quantity: item.quantity })),
+                    address: selectedAddress._id,
+                })
+                if (data.success) {
+                    document.title = "Proceed to Payment";
+                    window.open(data.url, '_blank');
+                } else {
+                    toast.error(data.message);
+                }
+            }
+        } catch (error) {
+            toast.error(error.message);
+        }
     }
 
     useEffect(() => {
@@ -78,10 +135,10 @@ const Cart = () => {
                     </div>)
                 )}
 
-                <button onClick={()=>{
-                    navigate('/allproducts'); 
-                    scrollTo(0,0);
-                    }} className="group cursor-pointer flex items-center mt-8 gap-2 text-primary font-medium">
+                <button onClick={() => {
+                    navigate('/allproducts');
+                    scrollTo(0, 0);
+                }} className="group cursor-pointer flex items-center mt-8 gap-2 text-primary font-medium">
                     <img className="group hover:-translate-x-1 transition" src={assets.arrow_right_icon_colored} alt="arrow" />
                     Continue Shopping
                 </button>
@@ -101,13 +158,13 @@ const Cart = () => {
                         </button>
                         {showAddress && (
                             <div className="absolute top-12 py-1 bg-white border border-gray-300 text-sm w-full">
-                                {addresses.map((address, index)=>(
+                                {addresses.map((address, index) => (
                                     <p onClick={() => {
                                         setSelectedAddress(address);
                                         setShowAddress(false);
-                                        }} className="text-gray-500 p-2 hover:bg-gray-100">
-                                    {address.street}, {address.city}, {address.state}, {address.country}
-                                </p>
+                                    }} className="text-gray-500 p-2 hover:bg-gray-100">
+                                        {address.street}, {address.city}, {address.state}, {address.country}
+                                    </p>
                                 ))}
                                 <p onClick={() => navigate('/add-address')} className="text-primary text-center cursor-pointer p-2 hover:bg-primary/10">
                                     Add address

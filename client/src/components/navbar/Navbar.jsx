@@ -2,16 +2,27 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Navigate, NavLink, useNavigate } from 'react-router';
 import { assets } from '../../assets/assets'
 import { AuthContext } from '../../context/AuthContext';
+import toast from 'react-hot-toast';
 
 
 const Navbar = () => {
     const [open, setOpen] = useState(false)
-    const { user, setUser, setShowUserLogin, searchQuery, setSearchQuery, getCartCount } = useContext(AuthContext);
+    const { user, setUser, setShowUserLogin, searchQuery, setSearchQuery, getCartCount, axios } = useContext(AuthContext);
     const navigate = useNavigate();
 
     const logout = async () => {
-        setUser(null);
-        navigate('/');
+        try {
+            const { data } = await axios.get('/api/user/logout');
+            if(data.success){
+                toast.success(data.message);
+                setUser(null);
+                navigate('/');
+            }else{
+                toast.error(data.message);
+            }
+        } catch (error) {
+            toast.error(error.message);
+        }
     }
 
     useEffect(() => {

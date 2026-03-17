@@ -1,5 +1,5 @@
 import React, { use, useContext } from 'react';
-import ProductCard from '../Product Card/ProductCard';
+import ProductCard from '../ProductCard/ProductCard';
 import { AuthContext } from '../../context/AuthContext';
 
 const BestSeller = () => {

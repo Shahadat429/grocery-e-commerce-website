@@ -1,6 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../../context/AuthContext';
 import { assets, dummyOrders } from '../../assets/assets';
+import axios from 'axios';
+import toast from 'react-hot-toast';
 
 const SellerOrders = () => {
 
@@ -8,7 +10,16 @@ const SellerOrders = () => {
     const [orders, setOrders] = useState([]);
 
     const fetchedOrders = async () => {
-        setOrders(dummyOrders);
+        try {
+            const { data } = await axios.get('/api/order/seller');
+            if(data.success){
+                setOrders(data.orders);
+            }else{
+                toast.error(data.message);
+            }
+        } catch (error) {
+            toast.error(error.message);
+        }
     }
 
     useEffect(() => {
