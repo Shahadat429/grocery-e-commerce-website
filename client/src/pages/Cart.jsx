@@ -75,7 +75,7 @@ const Cart = () => {
                 })
                 if (data.success) {
                     document.title = "Proceed to Payment";
-                    window.open(data.url, '_blank');
+                    window.location.replace(data.session.url);
                 } else {
                     toast.error(data.message);
                 }
