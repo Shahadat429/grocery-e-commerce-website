@@ -47,10 +47,10 @@ const Routes = createBrowserRouter([
         path: "/my-orders",
         Component: MyOrders
       },
-      // {
-      //   path: "/loader",
-      //   Component: Loading
-      // }
+      {
+        path: "/loader",
+        Component: Loading
+      }
     ]
   },
   {

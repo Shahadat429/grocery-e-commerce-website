@@ -129,47 +129,36 @@ export const stripeWebhook = async (req, res) => {
 
     // handle the event
     switch (event.type) {
-        case "payment_intent.succeeded": {
-            const paymentIntent = event.data.object;
-            const paymentIntentId = paymentIntent.id;
 
-            // getting session metadata
-            const session = await stripeInstance.checkout.sessions.list({
-                payment_intent: paymentIntentId,
-            });
-            const { orderId, userId } = session.data[0].metadata;
+        case "checkout.session.completed": {
+            const session = event.data.object;
+            const { orderId, userId } = session.metadata;
 
-            // update order payment paid
+            // Update order as paid
             await Order.findByIdAndUpdate(orderId, {
                 isPaid: true,
+                status: 'paid'
             });
 
-            //clear cart
+            // Clear user's cart
             await User.findByIdAndUpdate(userId, { cartItems: {} });
 
-
+            
             break;
         }
 
+        case "checkout.session.expired":
         case "payment_intent.payment_failed": {
-            const paymentIntent = event.data.object;
-            const paymentIntentId = paymentIntent.id;
+            const session = event.data.object;
+            const { orderId } = session.metadata;
 
-            // getting session metadata
-            const session = await stripeInstance.checkout.sessions.list({
-                payment_intent: paymentIntentId,
-            });
-            const { orderId } = session.data[0].metadata;
-
-            // delete order
-            await Order.findByIdAndDelete(orderId);
-
+            // Mark order as failed
+            await Order.findByIdAndUpdate(orderId, { status: 'failed' });
             break;
         }
-
 
         default:
-            console.error(`Unhandled event type ${event.type}`);
+            console.error(`Unhandled event type: ${event.type}`);
             break;
     }
 
