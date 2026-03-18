@@ -136,10 +136,10 @@ export const placeOrderStripe = async (req, res) => {
             const paymentIntentId = paymentIntent.id;
 
             // getting session metadata
-            const session = await stripeInstance.checkout.sessions.list({
+            const sessions = await stripeInstance.checkout.sessions.list({
                 payment_intent: paymentIntentId,
             });
-            const { orderId, userId } = session.data[0].metadata;
+            const { orderId, userId } = sessions.data[0].metadata;
 
             // update order payment paid
             await Order.findByIdAndUpdate(orderId, {
@@ -158,10 +158,10 @@ export const placeOrderStripe = async (req, res) => {
             const paymentIntentId = paymentIntent.id;
 
             // getting session metadata
-            const session = await stripeInstance.checkout.sessions.list({
+            const sessions = await stripeInstance.checkout.sessions.list({
                 payment_intent: paymentIntentId,
             });
-            const { orderId } = session.data[0].metadata;
+            const { orderId } = sessions.data[0].metadata;
 
             // delete order
             await Order.findByIdAndDelete(orderId);
