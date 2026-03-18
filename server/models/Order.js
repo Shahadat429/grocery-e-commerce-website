@@ -8,7 +8,11 @@ const orderSchema = new mongoose.Schema({
     }],
     amount: { type: Number , required: true },
     address: { type: String , required: true, ref: 'address' },
-    status: { type: String , default: 'Order placed' },
+    status: { 
+        type: String, 
+        enum: ['pending', 'paid', 'failed', 'cod'], // standardized statuses
+        default: 'pending' 
+    },
     paymentType: { type: String , required: true },
     isPaid: { type: Boolean, required: true , default: false },
 }, { timestamps: true });

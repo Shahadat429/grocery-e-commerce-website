@@ -28,7 +28,9 @@ export const placeOrderCOD = async (req, res) => {
             items,
             amount,
             address,
-            paymentType: "COD"
+            paymentType: "COD",
+            isPaid: false,
+            status: 'cod'
         })
         res.json({ success: true, message: "Order placed successfully" });
     } catch (error) {
@@ -69,7 +71,9 @@ export const placeOrderStripe = async (req, res) => {
             items,
             amount,
             address,
-            paymentType: "Online"
+            paymentType: "Online",
+            isPaid: false,
+            status: 'pending'
         })
 
 
