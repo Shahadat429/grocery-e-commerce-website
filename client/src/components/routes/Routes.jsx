@@ -12,6 +12,7 @@ import SellerRoutes from "./SellerRoutes";
 import SellerProductList from "../../pages/seller/SellerProductList";
 import SellerAddProduct from "../../pages/seller/SellerAddProduct";
 import SellerOrders from "../../pages/seller/SellerOrders";
+import Loading from "../Loading";
 
 const Routes = createBrowserRouter([
   {
@@ -46,6 +47,10 @@ const Routes = createBrowserRouter([
         path: "/my-orders",
         Component: MyOrders
       },
+      // {
+      //   path: "/loader",
+      //   Component: Loading
+      // }
     ]
   },
   {
