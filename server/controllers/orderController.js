@@ -8,7 +8,8 @@ import User from '../models/User.js';
 // Place order COD: /api/order/cod
 export const placeOrderCOD = async (req, res) => {
     try {
-        const { userId, items, address } = req.body;
+        const { items, address } = req.body;
+        const userId = req.userId;
         if (!address || items.length === 0) {
             return res.json({ success: false, message: "Invalid data" });
         }
@@ -40,7 +41,8 @@ export const placeOrderCOD = async (req, res) => {
 // Place order stripe: /api/order/stripe
 export const placeOrderStripe = async (req, res) => {
     try {
-        const { userId, items, address } = req.body;
+        const { items, address } = req.body;
+        const userId = req.userId;
         const { origin } = req.headers;
 
         if (!address || items.length === 0) {
@@ -180,7 +182,7 @@ export const stripeWebhook = async (req, res) => {
 // Get orders by user id: /api/order/user
 export const getUserOrders = async (req, res) => {
     try {
-        const { userId } = req;
+        const userId = req.userId;
         const orders = await Order.find({
             userId,
             $or: [{ paymentType: "COD" }, { isPaid: true }]
