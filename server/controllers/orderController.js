@@ -28,9 +28,7 @@ export const placeOrderCOD = async (req, res) => {
             items,
             amount,
             address,
-            paymentType: "COD",
-            isPaid: false,
-            status: 'cod'
+            paymentType: "COD"
         })
         res.json({ success: true, message: "Order placed successfully" });
     } catch (error) {
@@ -71,9 +69,7 @@ export const placeOrderStripe = async (req, res) => {
             items,
             amount,
             address,
-            paymentType: "Online",
-            isPaid: false,
-            status: 'pending'
+            paymentType: "Online"
         })
 
 
@@ -133,36 +129,47 @@ export const stripeWebhook = async (req, res) => {
 
     // handle the event
     switch (event.type) {
+        case "payment_intent.succeeded": {
+            const paymentIntent = event.data.object;
+            const paymentIntentId = paymentIntent.id;
 
-        case "checkout.session.completed": {
-            const session = event.data.object;
-            const { orderId, userId } = session.metadata;
+            // getting session metadata
+            const session = await stripeInstance.checkout.sessions.list({
+                payment_intent: paymentIntentId,
+            });
+            const { orderId, userId } = session.data[0].metadata;
 
-            // Update order as paid
+            // update order payment paid
             await Order.findByIdAndUpdate(orderId, {
                 isPaid: true,
-                status: 'paid'
             });
 
-            // Clear user's cart
+            //clear cart
             await User.findByIdAndUpdate(userId, { cartItems: {} });
 
-            
+
             break;
         }
 
-        case "checkout.session.expired":
         case "payment_intent.payment_failed": {
-            const session = event.data.object;
-            const { orderId } = session.metadata;
+            const paymentIntent = event.data.object;
+            const paymentIntentId = paymentIntent.id;
 
-            // Mark order as failed
-            await Order.findByIdAndUpdate(orderId, { status: 'failed' });
+            // getting session metadata
+            const session = await stripeInstance.checkout.sessions.list({
+                payment_intent: paymentIntentId,
+            });
+            const { orderId } = session.data[0].metadata;
+
+            // delete order
+            await Order.findByIdAndDelete(orderId);
+
             break;
         }
+
 
         default:
-            console.error(`Unhandled event type: ${event.type}`);
+            console.error(`Unhandled event type ${event.type}`);
             break;
     }
 
